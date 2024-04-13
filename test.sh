@@ -7,4 +7,5 @@ docker run -it \
 -e githubUser=$githubUser \
 -e githubRepo=$githubRepo \
 -e emailSender=$emailSender \
+-e dryRun=$dryRun \
 github_report 

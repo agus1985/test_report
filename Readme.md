@@ -18,6 +18,7 @@ export emailRecipientsReport="<emailaddr1,emailaddr2,...emailaddrn>"
 export githubUser="zalando"
 export githubRepo="patroni"
 export emailSender="report_sender@example.com"
+export dryRun="true"
 ```
 And then run the docker container
 ```sh
@@ -28,6 +29,7 @@ docker run -it \
 -e githubUser=$githubUser \
 -e githubRepo=$githubRepo \
 -e emailSender=$emailSender \
+-e dryRun=$dryRun \
 ```
 
 ## OR

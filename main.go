@@ -28,7 +28,7 @@ type Config struct {
 	githubUser            string
 	githubRepo            string
 	emailSender           string
-	dryRun                bool
+	dryRun                string
 }
 
 type Program struct {
@@ -40,7 +40,7 @@ func main() {
 
 	logger.Info("Initializing env ...")
 	configInfo := Config{}
-	configInfo.dryRun = true
+	configInfo.dryRun = "true"
 	configInfo.apiUrl = readManatoryConfig("apiUrl")
 	configInfo.apiToken = readManatoryConfig("apiToken")
 	configInfo.githubUser = readManatoryConfig("githubUser")
@@ -50,7 +50,7 @@ func main() {
 	configInfo.smtpPort = readConfig("smtpPort")
 	configInfo.smtpUser = readConfig("smtpUser")
 	configInfo.smtpPassword = readConfig("smtpPassword")
-	configInfo.dryRun = readConfig("dryRun") == "true"
+	configInfo.dryRun = readManatoryConfig("dryRun")
 	configInfo.emailRecipientsReport = readManatoryConfig("emailRecipientsReport")
 
 	logger.Info("Env initialized succesfully")
@@ -110,7 +110,7 @@ func main() {
 		logger.Error("Error cleaning temp file", err)
 	}*/
 
-	if program.config.dryRun == false {
+	if program.config.dryRun != "true" {
 		smtpPort, err := strconv.Atoi(program.config.smtpPort)
 		content, err := os.ReadFile("temp/report.html")
 		if err != nil {
