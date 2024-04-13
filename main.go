@@ -59,9 +59,17 @@ func main() {
 		config: configInfo,
 	}
 	openRequests, err := program.queryGitHubPullRequests("open")
+	if err != nil {
+		logger.Fatal("Error on http request", err)
+	}
 	closedRequests, err := program.queryGitHubPullRequests("closed")
+	if err != nil {
+		logger.Fatal("Error on http request", err)
+	}
 	inProgressRequests, err := program.queryGitHubPullRequests("in-progress")
-
+	if err != nil {
+		logger.Fatal("Error on http request", err)
+	}
 	itemReport1 := model.ItemReport{Status: "Open", Count: len(openRequests)}
 	itemReport2 := model.ItemReport{Status: "Closed", Count: len(closedRequests)}
 	itemReport3 := model.ItemReport{Status: "In-Progress", Count: len(inProgressRequests)}
@@ -74,7 +82,13 @@ func main() {
 	var reportItems2 []model.ItemReport
 
 	count1, err := countRequestsMoreThanNDays(60, openRequests)
+	if err != nil {
+		logger.Fatal("Error on http request", err)
+	}
 	count2, err := countRequestsMoreThanNDays(60, inProgressRequests)
+	if err != nil {
+		logger.Fatal("Error on http request", err)
+	}
 
 	itemReport2_1 := model.ItemReport{Status: "Openened >= 60 ago and not closed", Count: count1 + count2}
 	reportItems2 = append(reportItems2, itemReport2_1)
@@ -163,15 +177,22 @@ func (program *Program) queryGitHubPullRequests(filter string) ([]model.GitHubPu
 		return pullRequests, err
 	}
 	defer response.Body.Close()
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return pullRequests, fmt.Errorf("Error reading response: %d", err.Error())
+	if response.StatusCode == http.StatusOK {
+		body, err := io.ReadAll(response.Body)
+		if err != nil {
+			return pullRequests, fmt.Errorf("Error reading response: %d", err.Error())
+		}
+		err = json.Unmarshal(body, &pullRequests)
+		if err != nil {
+			logger.Error("Error parsing respons ", err)
+		}
+		return pullRequests, nil
+	} else {
+		err := fmt.Errorf("HTTP " + strconv.Itoa(response.StatusCode))
+		logger.Error("Failed to check pull requests: ", err)
+		return pullRequests, err
 	}
-	err = json.Unmarshal(body, &pullRequests)
-	if err != nil {
-		logger.Error("Error parsing respons ", err)
-	}
-	return pullRequests, nil
+
 }
 
 func countRequestsMoreThanNDays(nDays int, pullRequests []model.GitHubPullRequest) (int, error) {

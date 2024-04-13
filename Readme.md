@@ -35,7 +35,7 @@ docker run -it \
 ## OR
 ##### Use provided scripts
 
-> Note: `.vars.sh ` for setting envrionment variables
+> Note: `.vars.sh ` for setting envrionment variables, change with a valid personal token
 > Note: `test.sh ` for running test
 
 ##### Run
